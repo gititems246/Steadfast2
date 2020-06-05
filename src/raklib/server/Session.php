@@ -41,8 +41,8 @@ class Session{
     const STATE_CONNECTING_2 = 2;
     const STATE_CONNECTED = 3;
 
-	const MAX_SPLIT_SIZE = 128;
-	const MAX_SPLIT_COUNT = 4;
+	const MAX_SPLIT_SIZE = 128000;
+	const MAX_SPLIT_COUNT = 4000;
 
     public static $WINDOW_SIZE = 2048;
 

@@ -277,7 +277,7 @@ class AxisAlignedBB{
 			$tMax = $tZMax;
 		}
 		
-		var_dump($tMin, $tMax);
+		// var_dump($tMin, $tMax);
 
 		return true; 
 	}

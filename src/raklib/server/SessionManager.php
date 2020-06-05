@@ -215,6 +215,7 @@ class SessionManager{
 				$buff = $session->getDecrypt($buff);
 			}
 			$decoded = zlib_decode($buff);
+			var_dump(bin2hex($buff[0]));
 			$stream = new BinaryStream($decoded);
 			$length = strlen($decoded);
 			static $spamPacket = "\x39\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
@@ -225,13 +226,13 @@ class SessionManager{
                 $buf = $stream->getString();
                 
                 // debug
-                var_dump('from client');
-                var_dump(ord($buf{0}));          
-                if (strlen($buf) > 1000) {
-                    var_dump(strlen($buf));
-                } else {
-                    var_dump($buf);
-                }
+//                var_dump('from client' . __METHOD__ . " " . __LINE__);
+//                var_dump(ord($buf{0}) . __METHOD__ . " " . __LINE__);
+                // if (strlen($buf) > 1000) {
+                //     var_dump(strlen($buf));
+                // } else {
+                //     var_dump($buf);
+                // }
 				if (empty($buf) || $buf == $spamPacket || $buf == $spamPacket2) {
 					continue;
 				}
@@ -251,7 +252,9 @@ class SessionManager{
 					}
 				}
 				$buffer = chr(RakLib::PACKET_ENCAPSULATED) . chr(strlen($id)) . $id . $buf;
-				$this->server->pushThreadToMainPacket($buffer);
+
+//                var_dump($buffer . __METHOD__ . " " . __LINE__);
+                $this->server->pushThreadToMainPacket($buffer);
 			}
 			if ($count > 250) {		
 				$this->blockAddress($source, 30);
@@ -319,7 +322,7 @@ class SessionManager{
             if($id === RakLib::PACKET_ENCAPSULATED){
                 $len = ord($packet{$offset++});
                 $identifier = substr($packet, $offset, $len);
-                var_dump('iden' . $identifier);
+//                var_dump('iden' . $identifier  . __METHOD__ . " " . __LINE__);
                 //var_dump(debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20));             
                 $offset += $len;
                 if(isset($this->sessions[$identifier])){

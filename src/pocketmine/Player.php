@@ -963,6 +963,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 	 * @return int|bool
 	 */
 	public function dataPacket(DataPacket $packet){
+	    $this->directDataPacket($packet);
+	    return;
 		if($this->connected === false){
 			return false;
 		}
@@ -971,8 +973,13 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$packet->senderSubClientID = $this->subClientId;
 			return $this->parent->dataPacket($packet);
 		}
-		
-		switch($packet->pname()){
+
+//        var_dump($packet->pname() . __METHOD__ . " " . __LINE__);
+        if($packet->pname() == 'PLAYER_LIST_PACKET') {
+//            var_dump("DDDDDD");
+//            return;
+        }
+        switch($packet->pname()){
 			case 'INVENTORY_CONTENT_PACKET':
 				$queueKey = $packet->pname() . $packet->inventoryID;
 				unset($this->inventoryPacketQueue[$queueKey]);
@@ -1074,16 +1081,16 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			return;
 		}
 		//for debug
-		var_dump('to client');		
+//		var_dump('to client ' . __METHOD__ . " " . __LINE__);
 		$buffer = '';
 		foreach ($this->packetQueue as $pkBuf) {
 			//for debug
-			var_dump(ord($pkBuf{0}));
-		    if (strlen($pkBuf) > 1000) {
-				var_dump(strlen($pkBuf));
-			} else {
-				var_dump($pkBuf);
-			}
+//			var_dump(ord($pkBuf{0}) . __METHOD__ . " " . __LINE__);
+		    // if (strlen($pkBuf) > 1000) {
+			// 	var_dump(strlen($pkBuf));
+			// } else {
+			// 	var_dump($pkBuf);
+			// }
 			$buffer .= Binary::writeVarInt(strlen($pkBuf)) . $pkBuf;
 		}
 		foreach ($this->inventoryPacketQueue as $pk) {
@@ -1116,7 +1123,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$packet->senderSubClientID = $this->subClientId;
 			return $this->parent->dataPacket($packet);
 		}
-
+        var_dump(get_class($packet));
 		$packet->encode($this->protocol);
 		$packet->senderSubClientID = 0;
 		$buffer = $packet->getBuffer();
@@ -1741,7 +1748,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$this->subClients[$packet->targetSubClientID]->handleDataPacket($packet);
 			return;
 		}
-
+        var_dump($packet->pname());
 		switch($packet->pname()){
             case 'SET_PLAYER_GAMETYPE_PACKET':
                 file_put_contents("./logs/possible_hacks.log", date('m/d/Y h:i:s a', time()) . " SET_PLAYER_GAMETYPE_PACKET " . $this->username . PHP_EOL, FILE_APPEND | LOCK_EX);
@@ -3275,6 +3282,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $spawnPosition));
 		$this->setPosition($ev->getRespawnPosition());
 
+//		return;
 		$pk = new StartGamePacket();
 		$pk->seed = -1;
 		$pk->dimension = 0;
@@ -3291,52 +3299,53 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		$pk->multiplayerCorrelationId = $this->uuid->toString();
 		$this->directDataPacket($pk);	
 		if ($this->protocol >= ProtocolInfo::PROTOCOL_331) {
-			$this->directDataPacket(new AvailableEntityIdentifiersPacket());
-			$this->directDataPacket(new BiomeDefinitionListPacket());
+//			$this->directDataPacket(new AvailableEntityIdentifiersPacket());
+//			$this->directDataPacket(new BiomeDefinitionListPacket());
 		}
 
-		$pk = new SetTimePacket();
-		$pk->time = $this->level->getTime();
-		$pk->started = true;
-		$this->dataPacket($pk);
+//		$pk = new SetTimePacket();
+//		$pk->time = $this->level->getTime();
+//		$pk->started = true;
+//		$this->dataPacket($pk);
 
 		if ($this->getHealth() <= 0) {
 			$this->dead = true;
 		}
 
-		if (!empty(self::$availableCommands)) {
-			$pk = new AvailableCommandsPacket();
-			$this->dataPacket($pk);
-		}
+//		if (!empty(self::$availableCommands)) {
+//			$pk = new AvailableCommandsPacket();
+//			$this->dataPacket($pk);
+//		}
 		if($this->getHealth() <= 0){
 			$this->dead = true;
 		}
 
 		$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "/" . TextFormat::AQUA . $this->ip . " connected");
 
-		if ($this->getPlayerProtocol() >= Info::PROTOCOL_392) {
-			$pk = new CreativeItemsListPacket();
-			$pk->groups = Item::getCreativeGroups();
-			$pk->items = Item::getCreativeItems();
-			$this->dataPacket($pk);			
-		} else {
-			$slots = [];
-			foreach(Item::getCreativeItems() as $item){
-				$slots[] = clone $item['item'];
-			}
-			$pk = new InventoryContentPacket();
-			$pk->inventoryID = Protocol120::CONTAINER_ID_CREATIVE;
-			$pk->items = $slots;
-			$this->dataPacket($pk);
-		}
+//		if ($this->getPlayerProtocol() >= Info::PROTOCOL_392) {
+//			$pk = new CreativeItemsListPacket();
+//			$pk->groups = Item::getCreativeGroups();
+//			$pk->items = Item::getCreativeItems();
+//			$this->dataPacket($pk);
+//		} else {
+//			$slots = [];
+//			foreach(Item::getCreativeItems() as $item){
+//				$slots[] = clone $item['item'];
+//			}
+//			$pk = new InventoryContentPacket();
+//			$pk->inventoryID = Protocol120::CONTAINER_ID_CREATIVE;
+//			$pk->items = $slots;
+//			$this->dataPacket($pk);
+//		}
 
-		$this->server->sendRecipeList($this);
+//		$this->server->sendRecipeList($this);
 
-		$this->sendSelfData();
-		$this->updateSpeed($this->movementSpeed);
-		$this->sendFullPlayerList();
-//		$this->updateExperience(0, 100);
-//		$this->getInventory()->addItem(Item::get(Item::ENCHANTMENT_TABLE), Item::get(Item::DYE, 4, 64), Item::get(Item::IRON_AXE), Item::get(Item::IRON_SWORD));
+//		$this->sendSelfData();
+//		$this->updateSpeed($this->movementSpeed);
+//		$this->sendFullPlayerList();
+
+////		$this->updateExperience(0, 100);
+////		$this->getInventory()->addItem(Item::get(Item::ENCHANTMENT_TABLE), Item::get(Item::DYE, 4, 64), Item::get(Item::IRON_AXE), Item::get(Item::IRON_SWORD));
 	}
 
 

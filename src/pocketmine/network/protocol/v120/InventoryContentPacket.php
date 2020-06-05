@@ -15,7 +15,7 @@ class InventoryContentPacket extends PEPacket {
 	public $items = [];
 	
 	public function decode($playerProtocol) {
-		var_dump('decode: ' . __CLASS__);
+		var_dump('decode: ' . __METHOD__ . " " . __LINE__);
 	}
 
 	public function encode($playerProtocol) {
