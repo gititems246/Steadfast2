@@ -973,9 +973,14 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		}
 		$a = [
 //            'SET_ENTITY_DATA_PACKET',
-//            'UPDATE_ATTRIBUTES_PACKET',
+////            'UPDATE_ATTRIBUTES_PACKET',
 //            'ADVENTURE_SETTINGS_PACKET',
-//            'SET_TIME_PACKET'
+//            'SET_TIME_PACKET',
+//            'ADVENTURE_SETTINGS_PACKET',
+//            'INVENTORY_CONTENT_PACKET',
+//            'INVENTORY_SLOT_PACKET',
+//            'PLAY_STATUS_PACKET',
+//            'NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET'
         ];
 		if (in_array($packet->pname(), $a)) {
 		    return;
@@ -3328,27 +3333,27 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 
 		$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "/" . TextFormat::AQUA . $this->ip . " connected");
 
-		if ($this->getPlayerProtocol() >= Info::PROTOCOL_392) {
-			$pk = new CreativeItemsListPacket();
-			$pk->groups = Item::getCreativeGroups();
-			$pk->items = Item::getCreativeItems();
+//		if ($this->getPlayerProtocol() >= Info::PROTOCOL_392) {
+//			$pk = new CreativeItemsListPacket();
+//			$pk->groups = Item::getCreativeGroups();
+//			$pk->items = Item::getCreativeItems();
+////			$this->dataPacket($pk);
+//		} else {
+//			$slots = [];
+//			foreach(Item::getCreativeItems() as $item){
+//				$slots[] = clone $item['item'];
+//			}
+//			$pk = new InventoryContentPacket();
+//			$pk->inventoryID = Protocol120::CONTAINER_ID_CREATIVE;
+//			$pk->items = $slots;
 //			$this->dataPacket($pk);
-		} else {
-			$slots = [];
-			foreach(Item::getCreativeItems() as $item){
-				$slots[] = clone $item['item'];
-			}
-			$pk = new InventoryContentPacket();
-			$pk->inventoryID = Protocol120::CONTAINER_ID_CREATIVE;
-			$pk->items = $slots;
-			$this->dataPacket($pk);
-		}
+//		}
 
 		$this->server->sendRecipeList($this);
 
 		$this->sendSelfData();
 		$this->updateSpeed($this->movementSpeed);
-//		$this->sendFullPlayerList();
+		$this->sendFullPlayerList();
 //		$this->updateExperience(0, 100);
 
 //        echo "DFDFDFDFDDF\n";
@@ -5023,20 +5028,20 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		}
 		$this->server->batchPackets([$this], [$pk]);
 
-		if (count($playersWithProto140) > 0) {
-			$pk = new PlayerListPacket();
-			$pk->type = PlayerListPacket::TYPE_ADD;
-			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData(), $this->getXUID(), $this->getDeviceOS(), $this->additionalSkinData];
-			$pk->setDeviceId($this->getDeviceOS());
-			$this->server->batchPackets($playersWithProto140, [$pk]);
-		}
-		if (count($otherPlayers) > 0) {
-			$pk = new PlayerListPacket();
-			$pk->type = PlayerListPacket::TYPE_ADD;
-			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData()];
-			$pk->setDeviceId($this->getDeviceOS());
-			$this->server->batchPackets($otherPlayers, [$pk]);
-		}
+//		if (count($playersWithProto140) > 0) {
+//			$pk = new PlayerListPacket();
+//			$pk->type = PlayerListPacket::TYPE_ADD;
+//			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData(), $this->getXUID(), $this->getDeviceOS(), $this->additionalSkinData];
+//			$pk->setDeviceId($this->getDeviceOS());
+//			$this->server->batchPackets($playersWithProto140, [$pk]);
+//		}
+//		if (count($otherPlayers) > 0) {
+//			$pk = new PlayerListPacket();
+//			$pk->type = PlayerListPacket::TYPE_ADD;
+//			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData()];
+//			$pk->setDeviceId($this->getDeviceOS());
+//			$this->server->batchPackets($otherPlayers, [$pk]);
+//		}
 		$this->playerListIsSent = true;
 	}
 
