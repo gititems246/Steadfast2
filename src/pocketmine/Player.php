@@ -5028,20 +5028,20 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		}
 		$this->server->batchPackets([$this], [$pk]);
 
-//		if (count($playersWithProto140) > 0) {
-//			$pk = new PlayerListPacket();
-//			$pk->type = PlayerListPacket::TYPE_ADD;
-//			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData(), $this->getXUID(), $this->getDeviceOS(), $this->additionalSkinData];
-//			$pk->setDeviceId($this->getDeviceOS());
-//			$this->server->batchPackets($playersWithProto140, [$pk]);
-//		}
-//		if (count($otherPlayers) > 0) {
-//			$pk = new PlayerListPacket();
-//			$pk->type = PlayerListPacket::TYPE_ADD;
-//			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData()];
-//			$pk->setDeviceId($this->getDeviceOS());
-//			$this->server->batchPackets($otherPlayers, [$pk]);
-//		}
+		if (count($playersWithProto140) > 0) {
+			$pk = new PlayerListPacket();
+			$pk->type = PlayerListPacket::TYPE_ADD;
+			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData(), $this->getXUID(), $this->getDeviceOS(), $this->additionalSkinData];
+			$pk->setDeviceId($this->getDeviceOS());
+			$this->server->batchPackets($playersWithProto140, [$pk]);
+		}
+		if (count($otherPlayers) > 0) {
+			$pk = new PlayerListPacket();
+			$pk->type = PlayerListPacket::TYPE_ADD;
+			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData()];
+			$pk->setDeviceId($this->getDeviceOS());
+			$this->server->batchPackets($otherPlayers, [$pk]);
+		}
 		$this->playerListIsSent = true;
 	}
 
