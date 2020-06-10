@@ -479,8 +479,7 @@ class BinaryStream {
 			}
 			$additionalSkinData['PersonaPieces'] = $personaPieces;
 			$pieceTintColorCount = $this->getLInt();
-			$pieceTintColors = [];
-			var_dump('$pieceTintColorCount: ' . $pieceTintColorCount);
+			$pieceTintColors = [];		
 			for($i = 0; $i < $pieceTintColorCount; ++$i){
 				$pieceType = $this->getString();
 				$colorCount = $this->getLInt();
